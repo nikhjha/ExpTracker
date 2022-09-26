@@ -1,6 +1,7 @@
 package com.example.exptracker.navigation
 
 sealed class Screen(val route : String){
+    object StartScreen : Screen(route = "start")
     object HomeScreen : Screen(route = "home")
     object TransactionsScreen : Screen(route = "transactions")
     object AnalysisScreen : Screen(route = "analysis")

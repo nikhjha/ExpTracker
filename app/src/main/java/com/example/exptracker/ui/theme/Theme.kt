@@ -37,7 +37,7 @@ fun ExpTrackerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compos
 
     MaterialTheme(
         colors = colors,
-        typography = Typography,
+//        typography = Typography,
         shapes = Shapes,
         content = content
     )
