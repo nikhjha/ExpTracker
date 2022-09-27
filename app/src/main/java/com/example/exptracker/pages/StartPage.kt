@@ -33,7 +33,7 @@ fun StartPage( navController: NavController) {
 //    }
     LaunchedEffect(Unit){
         delay(1.seconds)
-        navController.navigate(route = Screen.MainAppScreen.route)
+        navController.navigate(route = Screen.SetUpScreen.route)
     }
     Column(
         Modifier
