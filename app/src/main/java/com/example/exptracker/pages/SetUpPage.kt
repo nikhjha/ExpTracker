@@ -111,7 +111,10 @@ fun FormInfo(
                             focusedBorderColor = MaterialTheme.colors.primary,
                             unfocusedBorderColor = Color.Gray
                         ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
                         keyboardActions = KeyboardActions(
                             onNext = {
                                 focusManager.moveFocus(FocusDirection.Down)
@@ -161,7 +164,10 @@ fun FormInfo(
                                         expanded = false
                                     }
                                 ) {
-                                    Text(text = selectionOption.sign)
+                                    Text(
+                                        text = "${selectionOption.name} (${selectionOption.sign})",
+                                        Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)
+                                    )
                                 }
                             }
                         }

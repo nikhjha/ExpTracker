@@ -28,7 +28,7 @@ sealed class Category(
         "Food",
         CardColor.Red
     )
-    fun getAllCategory() : List<Category>{
-        return listOf(Shopping, Subscription, Food)
-    }
+}
+fun getAllCategory() : List<Category>{
+    return listOf(Category.Shopping, Category.Subscription, Category.Food)
 }
