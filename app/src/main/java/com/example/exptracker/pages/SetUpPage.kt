@@ -2,24 +2,40 @@ package com.example.exptracker.pages
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusEventModifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.exptracker.data.Currencies
+import com.example.exptracker.data.Currency
+import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.ExpTrackerTheme
 
 
 @Composable
-fun SetupPage() {
-    Box(Modifier.fillMaxWidth()) {
+fun SetupPage(
+    navController: NavHostController,
+    saveBudget: (String) -> Unit,
+    saveCurrency: (Currency) -> Unit
+) {
 
+    val options = Currencies
+    var selectedOptionText by remember { mutableStateOf(options[0]) }
+    var budget by remember {
+        mutableStateOf("")
+    }
+    Box(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(top = 60.dp, start = 20.dp, end = 20.dp)) {
             Text(
                 "Let’s setup your \n" + "account!", style = MaterialTheme.typography.h3
@@ -29,7 +45,13 @@ fun SetupPage() {
                 Modifier.padding(top = 30.dp)
             )
             Spacer(modifier = Modifier.height(50.dp))
-            FormInfo()
+            FormInfo(
+                budget,
+                selectedOptionText,
+                { budget = it },
+                { selectedOptionText = it },
+                options
+            )
             Column(
                 Modifier
                     .fillMaxHeight()
@@ -42,7 +64,11 @@ fun SetupPage() {
                         .wrapContentSize(Alignment.Center)
                 ) {
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            saveBudget(budget)
+                            saveCurrency(selectedOptionText)
+                            navController.navigate(Screen.MainAppScreen.route)
+                        },
                         Modifier
                             .fillMaxWidth()
                             .height(50.dp), shape = RoundedCornerShape(15.dp)
@@ -58,15 +84,16 @@ fun SetupPage() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FormInfo() {
-    val options = listOf("₹", "\$", "Option 3", "Option 4", "Option 5")
+fun FormInfo(
+    budget: String,
+    selectedOptionText: Currency,
+    changeBudget: (String) -> Unit,
+    changeOptionText: (Currency) -> Unit,
+    options: List<Currency>
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(options[0]) }
-
-    var budget by remember {
-        mutableStateOf(TextFieldValue(""))
-    }
-    Box() {
+    val focusManager = LocalFocusManager.current
+    Box {
         Column(Modifier.fillMaxWidth()) {
             Box(
                 Modifier
@@ -77,14 +104,19 @@ fun FormInfo() {
                     OutlinedTextField(
                         value = budget,
                         modifier = Modifier.fillMaxWidth(),
-                        onValueChange = { newText -> budget = newText },
+                        onValueChange = { newText -> changeBudget(newText) },
                         label = { Text(text = "Budget") },
                         shape = RoundedCornerShape(15.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colors.primary,
                             unfocusedBorderColor = Color.Gray
                         ),
-//                        KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            }
+                        )
                     )
                 }
             }
@@ -95,12 +127,13 @@ fun FormInfo() {
                 Modifier
                     .fillMaxWidth()
             ) {
-                Column() {
+                Column {
                     Text("Select Your Currency", Modifier.padding(start = 10.dp))
                     ExposedDropdownMenuBox(expanded = expanded,
                         onExpandedChange = { expanded = !expanded }) {
-                        OutlinedTextField(readOnly = true,
-                            value = selectedOptionText,
+                        OutlinedTextField(
+                            readOnly = true,
+                            value = selectedOptionText.sign,
                             modifier = Modifier.fillMaxWidth(),
                             onValueChange = {},
                             label = { Text(text = "Currency") },
@@ -124,11 +157,11 @@ fun FormInfo() {
                             options.forEach { selectionOption ->
                                 DropdownMenuItem(
                                     onClick = {
-                                        selectedOptionText = selectionOption
+                                        changeOptionText(selectionOption)
                                         expanded = false
                                     }
                                 ) {
-                                    Text(text = selectionOption)
+                                    Text(text = selectionOption.sign)
                                 }
                             }
                         }
@@ -141,8 +174,8 @@ fun FormInfo() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun Setuppg() {
+fun SetupPagePreview() {
     ExpTrackerTheme {
-        SetupPage()
+        SetupPage(rememberNavController(), {}, {})
     }
 }

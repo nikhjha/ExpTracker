@@ -16,7 +16,7 @@ fun Navigation() {
             StartPage(navController)
         }
         composable(route = Screen.SetUpScreen.route) {
-            SetupPage()
+            SetupPage(navController,{},{})
         }
         composable(route = Screen.MainAppScreen.route){
             MainApp()
