@@ -14,14 +14,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.exptracker.data.dummyTx
+import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.CardColor
 import com.example.exptracker.ui.theme.ExpTrackerTheme
 
 
-
 @Composable
-fun RecentTxPanel() {
-    val items = dummyTx
+fun RecentTxPanel(changeRoute: (String) -> Unit) {
+    val items = dummyTx.slice(IntRange(0, 4))
     Column(
         Modifier
             .fillMaxWidth()
@@ -35,7 +35,9 @@ fun RecentTxPanel() {
         ) {
             Text(text = "Recent Transaction", fontWeight = FontWeight.Bold)
             Button(
-                onClick = {},
+                onClick = {
+                    changeRoute(Screen.TransactionsScreen.route)
+                },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = CardColor.Purple.backgroundColor
                 ),
@@ -55,8 +57,12 @@ fun RecentTxPanel() {
                 TransactionCard(tx = it)
             }
         }
-        if(items.isEmpty()){
-            Text("No transaction available. Please add expense.", fontSize = 14.sp, color = Color.Gray)
+        if (items.isEmpty()) {
+            Text(
+                "No transaction available. Please add expense.",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
         }
     }
 }
@@ -65,6 +71,6 @@ fun RecentTxPanel() {
 @Composable
 fun RecentTxPanelPreview() {
     ExpTrackerTheme {
-        RecentTxPanel()
+        RecentTxPanel({})
     }
 }

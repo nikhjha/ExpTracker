@@ -42,7 +42,7 @@ fun CustomIcon(it: Navitem, currentRoute: String) {
 }
 
 @Composable
-fun BottomBar(currentRoute: String, changeRoute: (String) -> Unit) {
+fun BottomBar(currentRoute: String, changeRoute: (String) -> Unit, changeNavRoute : (String) -> Unit) {
     val items: List<Navitem> = listOf(
         Navitem(icon = R.drawable.home, route = Screen.HomeScreen.route, label = "Home"),
         Navitem(
@@ -72,7 +72,10 @@ fun BottomBar(currentRoute: String, changeRoute: (String) -> Unit) {
             val isSelected = it.route == currentRoute
 
             IconButton(onClick = {
-                if (!isSelected)
+                if (it.route == Screen.AddTxScreen.route) {
+                    changeNavRoute(it.route)
+                }
+                else if (!isSelected)
                     changeRoute(it.route)
             }) {
                 CustomIcon(it = it, currentRoute = currentRoute)

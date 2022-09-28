@@ -18,4 +18,8 @@ sealed class CardColor(val backgroundColor: Color, val primary: Color) {
         Color(255, 153, 152),
         Color.Red
     )
+    object Blue : CardColor(
+        Color.Blue,
+        Color.Blue
+    )
 }

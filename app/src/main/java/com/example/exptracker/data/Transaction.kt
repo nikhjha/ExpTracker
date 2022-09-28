@@ -36,4 +36,46 @@ val dummyTx : List<Transaction> = listOf(
         Category.Food,
         LocalDateTime.of(2022, Month.SEPTEMBER, 28, 3, 44)
     ),
+    Transaction(
+        "4",
+        34f,
+        "Buy a ramen",
+        Category.Food,
+        LocalDateTime.of(2022, Month.SEPTEMBER, 27, 3, 44)
+    ),
+    Transaction(
+        "5",
+        2f,
+        "Buy a ramen",
+        Category.Shopping,
+        LocalDateTime.of(2022, Month.SEPTEMBER, 24, 3, 44)
+    ),
+    Transaction(
+        "6",
+        78f,
+        "Buy a ramen",
+        Category.Subscription,
+        LocalDateTime.of(2022, Month.AUGUST, 31, 3, 44)
+    ),
+    Transaction(
+        "7",
+        190f,
+        "Buy a ramen",
+        Category.Shopping,
+        LocalDateTime.of(2022, Month.SEPTEMBER, 1, 3, 44)
+    ),
+    Transaction(
+        "8",
+        34f,
+        "Buy a ramen",
+        Category.Food,
+        LocalDateTime.of(2022, Month.MAY, 28, 3, 44)
+    ),
+    Transaction(
+        "9",
+        64f,
+        "Buy a ramen",
+        Category.Subscription,
+        LocalDateTime.of(2021, Month.SEPTEMBER, 28, 3, 44)
+    ),
 )

@@ -24,7 +24,9 @@ import com.example.exptracker.util.CurrencyFormater
 
 
 @Composable
-fun HomePage() {
+fun HomePage(
+    changeRoute : (String) -> Unit
+) {
     Column(
         Modifier
             .verticalScroll(rememberScrollState())
@@ -65,7 +67,7 @@ fun HomePage() {
             }
         }
         FrequencyGraph()
-        RecentTxPanel()
+        RecentTxPanel(changeRoute)
         Spacer(modifier = Modifier.height(100.dp))
     }
 }
@@ -74,6 +76,6 @@ fun HomePage() {
 @Composable
 fun HomePagePreview() {
     ExpTrackerTheme {
-        HomePage()
+        HomePage({})
     }
 }

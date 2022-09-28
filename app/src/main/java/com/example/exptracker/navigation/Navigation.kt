@@ -4,9 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.exptracker.pages.MainApp
-import com.example.exptracker.pages.SetupPage
-import com.example.exptracker.pages.StartPage
+import com.example.exptracker.pages.*
 
 @Composable
 fun Navigation() {
@@ -19,7 +17,13 @@ fun Navigation() {
             SetupPage(navController,{},{})
         }
         composable(route = Screen.MainAppScreen.route){
-            MainApp()
+            MainApp(navController)
+        }
+        composable(route = Screen.AddTxScreen.route){
+            AddTxPage()
+        }
+        composable(route = Screen.EditTxScreen.route){
+            EditTxPage()
         }
     }
 }
