@@ -34,6 +34,7 @@ fun MainApp(
         when (route) {
             Screen.HomeScreen.route -> HomePage(changeRoute)
             Screen.TransactionsScreen.route -> TransactionsPage(changeRoute)
+            Screen.AnalysisScreen.route -> AnalysisPage()
         }
     }
 }
