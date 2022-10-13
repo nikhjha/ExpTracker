@@ -28,6 +28,12 @@ sealed class Category(
         "Food",
         CardColor.Red
     )
+    object Miscellaneous : Category(
+        "miscellaneous",
+        R.drawable.user,
+        "Miscellaneous",
+        CardColor.Red
+    )
 }
 fun getAllCategory() : List<Category>{
     return listOf(Category.Shopping, Category.Subscription, Category.Food)

@@ -2,6 +2,7 @@ package com.example.exptracker.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -17,12 +18,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.exptracker.R
 import com.example.exptracker.data.CustomMonth
-
-
+import com.example.exptracker.navigation.Screen
 
 
 @Composable
-fun NotificationBar(modifier: Modifier = Modifier) {
+fun NotificationBar(
+    modifier: Modifier = Modifier,
+    month: CustomMonth,
+    updateMonth: (CustomMonth) -> Unit,
+    changeRoute : (String) -> Unit
+) {
     Row(
         modifier
             .fillMaxWidth()
@@ -38,9 +43,11 @@ fun NotificationBar(modifier: Modifier = Modifier) {
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(32.dp)
-                .clip(CircleShape)
+                .clip(CircleShape).clickable {
+                    changeRoute(Screen.ProfileScreen.route)
+                }
         )
-        SelectMonth(CustomMonth.Oct, {})
+        SelectMonth(month, updateMonth)
         var expanded by remember { mutableStateOf(false) }
         Box() {
             IconButton(onClick = {

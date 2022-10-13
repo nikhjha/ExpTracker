@@ -1,12 +1,34 @@
 package com.example.exptracker.pages
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import com.example.exptracker.component.ExpensePanel
 import com.example.exptracker.data.Category
+import com.example.exptracker.data.Currency
+import com.example.exptracker.data.Transaction
+import com.example.exptracker.viewmodels.TransactionViewModel
+import com.example.exptracker.viewmodels.UserDetailViewModel
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Composable
-fun AddTxPage(){
-    ExpensePanel(changeRoute = {}, "Add Expense", 0f, Category.Shopping, "", "Add", {
-        a,b,c -> {}
-    })
+fun AddTxPage(
+    popRoute: () -> Unit,
+    transactionViewModel: TransactionViewModel = TransactionViewModel(),
+    userDetailViewModel: UserDetailViewModel = UserDetailViewModel()
+) {
+    val currency = userDetailViewModel.currency.collectAsState()
+    ExpensePanel(popRoute, "Add Expense", 0f, Category.Shopping, "", "Add", { a, b, c ->
+        transactionViewModel.addTx(
+            Transaction(
+                UUID.randomUUID().toString(),
+                a,
+                c,
+                b,
+                LocalDateTime.now(),
+                currency.value
+            )
+        )
+        popRoute()
+    }, currency.value)
 }

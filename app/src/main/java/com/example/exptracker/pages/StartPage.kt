@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +19,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.ExpTrackerTheme
+import com.example.exptracker.viewmodels.UserDetailViewModel
 import kotlinx.coroutines.delay
 //import java.util.Timer
 //import kotlin.concurrent.schedule
@@ -26,14 +28,19 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun StartPage( navController: NavController) {
+fun StartPage( navController: NavController, userDetailViewModel: UserDetailViewModel = UserDetailViewModel()) {
 
 //    Timer("LoadUp", false).schedule(500){
 //        navController.navigate(route = Screen.HomeScreen.route)
 //    }
+    val budget = userDetailViewModel.budget.collectAsState()
     LaunchedEffect(Unit){
         delay(1.seconds)
-        navController.navigate(route = Screen.SetUpScreen.route)
+        if(budget.value == 0f){
+            navController.navigate(route = Screen.SetUpScreen.route)
+        }else{
+            navController.navigate(route = Screen.MainAppScreen.route)
+        }
     }
     Column(
         Modifier

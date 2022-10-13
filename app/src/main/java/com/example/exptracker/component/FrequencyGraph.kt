@@ -1,5 +1,6 @@
 package com.example.exptracker.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,9 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.exptracker.data.RecentSelection
+import com.example.exptracker.data.*
 import com.example.exptracker.ui.theme.CardColor
+import com.example.exptracker.ui.theme.ExpTrackerTheme
+import com.example.exptracker.util.groupByCumulativeSelection
+import com.example.exptracker.util.groupByRecentSelection
+import kotlin.random.Random
 
 @Composable
 fun CustomButton(text: String, selected: Boolean, onClick: () -> Unit) {
@@ -60,19 +66,56 @@ fun RecentSelector(selectedBase: RecentSelection, changeBase: (base: RecentSelec
     }
 }
 
+@Composable
+fun Graph(tx: List<Transaction>) {
+    val list =
+        if (tx.size > 1) listOf(nullTx, *tx.toTypedArray()) else if (tx.size == 1) listOf(nullTx, tx[0]) else listOf(nullTx, nullTx)
+    val yStep = list.maxOf {
+        it.amount
+    }
+    val height = 150
+    val multiplier = if(yStep == 0f) 0f else height.toFloat() / yStep
+    /* to test with random points */
+    val points = list.map {
+        if(multiplier > 0f) return@map (it.amount) * (height / yStep)  + 5f
+        (it.amount) * multiplier + 5f
+    }
+
+    LineGraph(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 50.dp).height((height).dp),
+        xValues = (1..list.size).map { it - 1  },
+        yValues = (0..list.size).map { (it) * (yStep / (list.size + 1)).toInt() },
+        points = points,
+        verticalStep = height / (list.size + 2),
+        0.dp
+    )
+}
 
 @Composable
-fun FrequencyGraph(){
+fun FrequencyGraph(tx: List<Transaction>) {
     var selectedBase by remember { mutableStateOf<RecentSelection>(RecentSelection.Today) }
     val changeBase: (base: RecentSelection) -> Unit = {
         selectedBase = it
     }
-    Spacer(modifier = Modifier.height(100.dp))
+    val group = groupByCumulativeSelection(tx)
+    Spacer(modifier = Modifier.height(16.dp))
     Column(
         Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ){
+            .padding(16.dp)
+            .fillMaxWidth(),
+    ) {
+        Graph(group[selectedBase]?.reversed() ?: listOf())
+        Spacer(modifier = Modifier.height(16.dp))
         RecentSelector(selectedBase, changeBase)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FrequencyPreview() {
+    ExpTrackerTheme {
+        FrequencyGraph(tx = dummyTx)
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,23 +26,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.exptracker.data.Category
+import com.example.exptracker.data.Currencies
+import com.example.exptracker.data.Currency
 import com.example.exptracker.data.getAllCategory
-import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.CardColor
 import com.example.exptracker.ui.theme.ExpTrackerTheme
+import com.example.exptracker.util.CurrencyFormater
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ExpensePanel(
-    changeRoute: (String) -> Unit,
+    popRoute: () -> Unit,
     title: String,
     txAmount: Float,
     txCategory: Category,
     txDescription: String,
     btnText: String,
-    onBtnClick: (Float, Category, String) -> Unit
+    onBtnClick: (Float, Category, String) -> Unit,
+    currency: Currency
 ) {
-    var amount by remember { mutableStateOf("$txAmount") }
+    var amount by remember { mutableStateOf("${if(txAmount == 0f) "" else txAmount}") }
     var expanded by remember { mutableStateOf(false) }
     var category by remember { mutableStateOf(txCategory) }
     val options = getAllCategory()
@@ -63,7 +67,7 @@ fun ExpensePanel(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = {
-                changeRoute(Screen.AnalysisScreen.route)
+                popRoute()
             }) {
                 Icon(
                     Icons.Default.ArrowBack,
@@ -79,17 +83,35 @@ fun ExpensePanel(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("How Much ?", color = Color.Gray, fontSize = 20.sp)
-            TextField(value = amount, onValueChange = { amount = it },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = currency.sign,
+                    color = Color.White,
+                    fontSize = 64.sp
                 )
-            )
+                TextField(value = amount, onValueChange = { amount = it },
+                    placeholder = {
+                                  Text(
+                                      "0", fontSize = 64.sp, color = Color.LightGray
+                                  )
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next,
+                    ),
+                    textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 64.sp),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    ),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.White.copy(0f),
+                        textColor = Color.White
+                    ),
+                    modifier = Modifier.width(250.dp)
+                )
+            }
         }
         Box(
             Modifier
@@ -165,7 +187,7 @@ fun ExpensePanel(
                 Spacer(modifier = Modifier.height(72.dp))
                 Button(
                     onClick = {
-                        onBtnClick(amount.toFloat(), category, description)
+                        onBtnClick(if(amount == "") 0f else amount.toFloat(), category, description)
                     },
                     Modifier
                         .fillMaxWidth(),
@@ -182,8 +204,8 @@ fun ExpensePanel(
 @Composable
 fun ExpensePanelPreview() {
     ExpTrackerTheme {
-        ExpensePanel(changeRoute = {}, "Add", 0f, Category.Shopping, "", "Add", {
-            a,b,c -> {}
-        })
+        ExpensePanel(popRoute = {}, "Add", 0f, Category.Shopping, "", "Add", { _, _, _ ->
+            run {}
+        }, Currencies[0])
     }
 }

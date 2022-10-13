@@ -2,10 +2,8 @@ package com.example.exptracker.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -58,29 +56,31 @@ fun BottomBar(currentRoute: String, changeRoute: (String) -> Unit, changeNavRout
         ),
         Navitem(icon = R.drawable.user, route = Screen.ProfileScreen.route, label = "Profile"),
     )
-    Row(
-        modifier = Modifier.fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
-            .padding(vertical = 22.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Box(Modifier.clickable {}){
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .background(MaterialTheme.colors.surface)
+                .padding(vertical = 22.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
 
-        items.forEach {
+            items.forEach {
 
-            val isSelected = it.route == currentRoute
+                val isSelected = it.route == currentRoute
 
-            IconButton(onClick = {
-                if (it.route == Screen.AddTxScreen.route) {
-                    changeNavRoute(it.route)
+                IconButton(onClick = {
+                    if (it.route == Screen.AddTxScreen.route ) {
+                        changeNavRoute(it.route)
+                    }
+                    else if (!isSelected)
+                        changeRoute(it.route)
+                }) {
+                    CustomIcon(it = it, currentRoute = currentRoute)
                 }
-                else if (!isSelected)
-                    changeRoute(it.route)
-            }) {
-                CustomIcon(it = it, currentRoute = currentRoute)
-            }
 
+            }
         }
     }
 }

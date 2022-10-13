@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,24 +21,31 @@ import androidx.compose.ui.unit.sp
 import com.example.exptracker.component.SelectMonth
 import com.example.exptracker.component.TransactionCard
 import com.example.exptracker.data.CustomMonth
+import com.example.exptracker.data.Transaction
 import com.example.exptracker.data.dummyTx
 import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.CardColor
 import com.example.exptracker.ui.theme.ExpTrackerTheme
+import com.example.exptracker.util.groupByCumulativeSelection
 import com.example.exptracker.util.groupByRecentSelection
 
 @Composable
 fun TransactionsPage(
-    changeRoute : (String) -> Unit
+    changeRoute : (String) -> Unit,
+    changeNavRoute : (String) -> Unit,
+    tx : List<Transaction>,
+    month: CustomMonth,
+    updateMonth: (CustomMonth) -> Unit,
+    deleteTx : (String) -> Unit = {}
 ) {
-    val items = groupByRecentSelection(dummyTx)
+    val items = groupByRecentSelection(tx)
     Column(
         Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(16.dp)
     ) {
-        SelectMonth(month = CustomMonth.Oct, changeMonth = {})
+        SelectMonth(month = month, changeMonth = updateMonth)
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             Modifier
@@ -64,6 +72,14 @@ fun TransactionsPage(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+        if(tx.isEmpty()){
+            Text(
+                "No transaction available. Please add expense.",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
         LazyColumn {
             items.forEach {
                 if (it.value.isNotEmpty()) {
@@ -79,7 +95,7 @@ fun TransactionsPage(
                 it.value.forEach {
                     item {
                         Box(Modifier.padding(bottom = 16.dp)) {
-                            TransactionCard(tx = it)
+                            TransactionCard(tx = it, changeNavRoute, deleteTx)
                         }
                     }
                 }
@@ -95,6 +111,6 @@ fun TransactionsPage(
 @Composable
 fun TransactionsPagePreview() {
     ExpTrackerTheme {
-        TransactionsPage({})
+        TransactionsPage({},{}, listOf(), CustomMonth.Oct,{})
     }
 }

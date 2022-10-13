@@ -1,5 +1,7 @@
 package com.example.exptracker.util
 
-fun CurrencyFormater(num : Float) : String{
-    return "₹$num"
+import com.example.exptracker.data.Currency
+
+fun CurrencyFormater(num : Float, currency: Currency) : String{
+    return "${currency.sign}$num"
 }

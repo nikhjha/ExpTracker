@@ -21,15 +21,14 @@ import com.example.exptracker.data.Currencies
 import com.example.exptracker.data.Currency
 import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.ExpTrackerTheme
+import com.example.exptracker.viewmodels.UserDetailViewModel
 
 
 @Composable
 fun SetupPage(
     navController: NavHostController,
-    saveBudget: (String) -> Unit,
-    saveCurrency: (Currency) -> Unit
+    userDetailViewModel: UserDetailViewModel = UserDetailViewModel()
 ) {
-
     val options = Currencies
     var selectedOptionText by remember { mutableStateOf(options[0]) }
     var budget by remember {
@@ -65,8 +64,8 @@ fun SetupPage(
                 ) {
                     Button(
                         onClick = {
-                            saveBudget(budget)
-                            saveCurrency(selectedOptionText)
+                            userDetailViewModel.updateBudget(if(budget == "") 0f else budget.toFloat())
+                            userDetailViewModel.updateCurrency(selectedOptionText)
                             navController.navigate(Screen.MainAppScreen.route)
                         },
                         Modifier
@@ -182,6 +181,6 @@ fun FormInfo(
 @Composable
 fun SetupPagePreview() {
     ExpTrackerTheme {
-        SetupPage(rememberNavController(), {}, {})
+        SetupPage(rememberNavController())
     }
 }

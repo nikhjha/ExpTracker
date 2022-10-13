@@ -18,6 +18,10 @@ import androidx.compose.ui.unit.sp
 import com.example.exptracker.component.FrequencyGraph
 import com.example.exptracker.component.NotificationBar
 import com.example.exptracker.component.RecentTxPanel
+import com.example.exptracker.data.Currencies
+import com.example.exptracker.data.Currency
+import com.example.exptracker.data.CustomMonth
+import com.example.exptracker.data.Transaction
 import com.example.exptracker.ui.theme.CardColor
 import com.example.exptracker.ui.theme.ExpTrackerTheme
 import com.example.exptracker.util.CurrencyFormater
@@ -25,8 +29,18 @@ import com.example.exptracker.util.CurrencyFormater
 
 @Composable
 fun HomePage(
-    changeRoute : (String) -> Unit
+    changeRoute: (String) -> Unit,
+    changeNavRoute: (String) -> Unit,
+    tx: List<Transaction>,
+    budget: Float,
+    currency: Currency,
+    month: CustomMonth,
+    updateMonth: (CustomMonth) -> Unit,
+    deleteTx : (String) -> Unit = {}
 ) {
+    val total = tx.fold(0f) { prev, curr ->
+        prev + curr.amount
+    }
     Column(
         Modifier
             .verticalScroll(rememberScrollState())
@@ -37,7 +51,7 @@ fun HomePage(
             Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(0.dp, 0.dp, 64.dp, 64.dp))
-                .background(color = Color(0xFFFFF6E5))
+                .background(color = if (total > budget) Color(240, 120, 120) else Color(0xFFFFF6E5))
                 .padding(bottom = 32.dp)
         ) {
             Column(
@@ -45,14 +59,18 @@ fun HomePage(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                NotificationBar()
+                NotificationBar(
+                    month = month,
+                    updateMonth = updateMonth,
+                    changeRoute = changeRoute
+                )
                 Spacer(Modifier.height(16.dp))
-                Text("Current Expenses", color = Color.Gray)
+                Text("Current Expenses", color = if (total > budget) Color.White else Color.Gray)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = CurrencyFormater(9400f), fontSize = 32.sp)
+                Text(text = CurrencyFormater(total, currency), fontSize = 32.sp)
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Total Budget : ${CurrencyFormater(10000f)}",
+                    text = "Total Budget : ${CurrencyFormater(budget, currency)}",
                     modifier = Modifier
                         .border(
                             1.dp,
@@ -66,8 +84,8 @@ fun HomePage(
                 Spacer(modifier = Modifier.height(48.dp))
             }
         }
-        FrequencyGraph()
-        RecentTxPanel(changeRoute)
+        FrequencyGraph(tx)
+        RecentTxPanel(changeRoute, changeNavRoute, tx, deleteTx)
         Spacer(modifier = Modifier.height(100.dp))
     }
 }
@@ -76,6 +94,6 @@ fun HomePage(
 @Composable
 fun HomePagePreview() {
     ExpTrackerTheme {
-        HomePage({})
+        HomePage({}, {}, listOf(), 0f, Currencies[0], CustomMonth.Oct, {})
     }
 }
