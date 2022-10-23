@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.sp
 import com.example.exptracker.component.BarGraph
 import com.example.exptracker.component.LineGraph
@@ -84,22 +86,12 @@ fun AnalysisPage(tx: List<Transaction>, month: CustomMonth, updateMonth: (Custom
             Spacer(modifier = Modifier)
             var expanded by remember { mutableStateOf(false) }
             Box {
-                OutlinedButton(
-                    onClick = { expanded = !expanded },
-                    border = BorderStroke(1.dp, color = Color.Gray),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f)),
-                    contentPadding = PaddingValues(end = 8.dp, start = 8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.ArrowDropDown,
-                            contentDescription = "DropDown",
-                            tint = MaterialTheme.colors.primary
-                        )
-                    }
+                IconButton(onClick = { expanded = !expanded },) {
+                    Icon(
+                        imageVector =  ImageVector.vectorResource(id = R.drawable.filter_icon),
+                        contentDescription = "DropDown",
+                        tint = MaterialTheme.colors.primary
+                    )
                 }
                 DropdownMenu(
                     expanded = expanded,

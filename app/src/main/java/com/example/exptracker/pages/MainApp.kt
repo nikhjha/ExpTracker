@@ -9,9 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.exptracker.component.BottomBar
-import com.example.exptracker.data.Currency
-import com.example.exptracker.data.Transaction
-import com.example.exptracker.data.getAllMonths
+import com.example.exptracker.data.*
 import com.example.exptracker.navigation.Screen
 import com.example.exptracker.viewmodels.TransactionViewModel
 import com.example.exptracker.viewmodels.UserDetailViewModel
@@ -22,12 +20,12 @@ fun MainApp(
     navController: NavHostController,
     route: String,
     changeRoute: (String) -> Unit,
-    transactionViewModel: TransactionViewModel = TransactionViewModel(),
-    userDetailViewModel: UserDetailViewModel = UserDetailViewModel()
+    transactionViewModel: TransactionViewModel,
+    userDetailViewModel: UserDetailViewModel
 ) {
     val txs = transactionViewModel.txs.collectAsState()
-    val budget = userDetailViewModel.budget.collectAsState()
-    val currency = userDetailViewModel.currency.collectAsState()
+    val budget = userDetailViewModel.budget.collectAsState(initial = 0f)
+    val currency = userDetailViewModel.currency.collectAsState(initial = Currencies[0])
     val selectedMonth = userDetailViewModel.selectedMonth.collectAsState()
     val tx = txs.value.filter {
         it.currency == currency.value && selectedMonth.value == getAllMonths()[it.dateTime.monthValue - 1]
@@ -56,8 +54,8 @@ fun MainApp(
                     changeRoute,
                     changeNavRoute,
                     tx,
-                    budget.value,
-                    currency.value,
+                    budget.value ?: 0f,
+                    currency.value ?: Currencies[0],
                     selectedMonth.value,
                     { userDetailViewModel.updateMonth(it) },
                     { transactionViewModel.deleteTx(it) }

@@ -14,7 +14,10 @@ import com.example.exptracker.viewmodels.TransactionViewModel
 import com.example.exptracker.viewmodels.UserDetailViewModel
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    userDetailViewModel: UserDetailViewModel,
+    transactionViewModel: TransactionViewModel
+) {
     val navController = rememberNavController()
     val popNavRoute: () -> Unit = {
         navController.popBackStack()
@@ -25,8 +28,6 @@ fun Navigation() {
     val changeRoute: (String) -> Unit = {
         route = it
     }
-    val userDetailViewModel = UserDetailViewModel()
-    val transactionViewModel = TransactionViewModel()
     NavHost(navController = navController, startDestination = Screen.StartScreen.route) {
         composable(route = Screen.StartScreen.route) {
             StartPage(navController, userDetailViewModel)

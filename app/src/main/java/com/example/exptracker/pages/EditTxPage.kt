@@ -13,7 +13,7 @@ import com.example.exptracker.viewmodels.UserDetailViewModel
 fun EditTxPage(
     popRoute: () -> Unit,
     txId: String,
-    transactionViewModel: TransactionViewModel = TransactionViewModel(),
+    transactionViewModel: TransactionViewModel,
 ) {
     val tx = transactionViewModel.txs.collectAsState()
     val transaction: Transaction? = tx.value.find { it ->

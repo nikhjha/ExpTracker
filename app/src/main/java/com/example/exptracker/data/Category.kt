@@ -12,19 +12,19 @@ sealed class Category(
 ) {
     object Shopping : Category(
         "shopping",
-        R.drawable.user,
+        R.drawable.shopping,
         "Shopping",
         CardColor.Orange
     )
     object Subscription : Category(
         "subscription",
-        R.drawable.user,
+        R.drawable.subscription,
         "Subscription",
         CardColor.Purple
     )
     object Food : Category(
         "food",
-        R.drawable.user,
+        R.drawable.food,
         "Food",
         CardColor.Red
     )
@@ -35,6 +35,17 @@ sealed class Category(
         CardColor.Red
     )
 }
+
+val mapOfCategory = mapOf<String, Category>(
+    Category.Shopping.id to Category.Shopping,
+    Category.Subscription.id to Category.Subscription,
+    Category.Food.id to Category.Food
+)
+
 fun getAllCategory() : List<Category>{
-    return listOf(Category.Shopping, Category.Subscription, Category.Food)
+    return mapOfCategory.values.toList()
+}
+
+fun getCategory( id : String) : Category? {
+    return mapOfCategory[id]
 }

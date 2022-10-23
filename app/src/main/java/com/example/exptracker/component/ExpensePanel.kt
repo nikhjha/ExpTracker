@@ -31,7 +31,6 @@ import com.example.exptracker.data.Currency
 import com.example.exptracker.data.getAllCategory
 import com.example.exptracker.ui.theme.CardColor
 import com.example.exptracker.ui.theme.ExpTrackerTheme
-import com.example.exptracker.util.CurrencyFormater
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

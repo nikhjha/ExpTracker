@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -19,20 +20,33 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.exptracker.data.Currencies
 import com.example.exptracker.data.Currency
+import com.example.exptracker.datastore.UserPreference
 import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.ExpTrackerTheme
 import com.example.exptracker.viewmodels.UserDetailViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 
 
 @Composable
 fun SetupPage(
     navController: NavHostController,
-    userDetailViewModel: UserDetailViewModel = UserDetailViewModel()
+    userDetailViewModel: UserDetailViewModel
 ) {
     val options = Currencies
     var selectedOptionText by remember { mutableStateOf(options[0]) }
     var budget by remember {
         mutableStateOf("")
+    }
+    LaunchedEffect(Unit ){
+        userDetailViewModel.currency.collect() {
+                it -> selectedOptionText = it ?: options[0]
+        }
+    }
+    LaunchedEffect(Unit){
+        userDetailViewModel.budget.collect() {
+            budget = if (it == 0f) "" else it.toString()
+        }
     }
     Box(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(top = 60.dp, start = 20.dp, end = 20.dp)) {
@@ -44,8 +58,7 @@ fun SetupPage(
                 Modifier.padding(top = 30.dp)
             )
             Spacer(modifier = Modifier.height(50.dp))
-            FormInfo(
-                budget,
+            FormInfo(budget,
                 selectedOptionText,
                 { budget = it },
                 { selectedOptionText = it },
@@ -64,7 +77,7 @@ fun SetupPage(
                 ) {
                     Button(
                         onClick = {
-                            userDetailViewModel.updateBudget(if(budget == "") 0f else budget.toFloat())
+                            userDetailViewModel.updateBudget(if (budget == "") 0f else budget.toFloat())
                             userDetailViewModel.updateCurrency(selectedOptionText)
                             navController.navigate(Screen.MainAppScreen.route)
                         },
@@ -95,13 +108,11 @@ fun FormInfo(
     Box {
         Column(Modifier.fillMaxWidth()) {
             Box(
-                Modifier
-                    .fillMaxWidth()
+                Modifier.fillMaxWidth()
             ) {
                 Column(Modifier.fillMaxWidth()) {
                     Text("Enter Your Budget", Modifier.padding(start = 10.dp))
-                    OutlinedTextField(
-                        value = budget,
+                    OutlinedTextField(value = budget,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { newText -> changeBudget(newText) },
                         label = { Text(text = "Budget") },
@@ -111,27 +122,23 @@ fun FormInfo(
                             unfocusedBorderColor = Color.Gray
                         ),
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
+                            keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                         ),
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-                    )
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }))
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Box(
-                Modifier
-                    .fillMaxWidth()
+                Modifier.fillMaxWidth()
             ) {
                 Column {
                     Text("Select Your Currency", Modifier.padding(start = 10.dp))
-                    ExposedDropdownMenuBox(expanded = expanded,
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
                         onExpandedChange = { expanded = !expanded }) {
                         OutlinedTextField(
                             readOnly = true,
@@ -150,22 +157,19 @@ fun FormInfo(
                             },
 //                                    colors = ExposedDropdownMenuDefaults.textFieldColors()
                         )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                            }
-                        ) {
+                        ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
+                            expanded = false
+                        }) {
                             options.forEach { selectionOption ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        changeOptionText(selectionOption)
-                                        expanded = false
-                                    }
-                                ) {
+                                DropdownMenuItem(onClick = {
+                                    changeOptionText(selectionOption)
+                                    expanded = false
+                                }) {
                                     Text(
                                         text = "${selectionOption.name} (${selectionOption.sign})",
-                                        Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentSize(Alignment.Center)
                                     )
                                 }
                             }
@@ -181,6 +185,6 @@ fun FormInfo(
 @Composable
 fun SetupPagePreview() {
     ExpTrackerTheme {
-        SetupPage(rememberNavController())
+        SetupPage(rememberNavController(), UserDetailViewModel(UserPreference(LocalContext.current)))
     }
 }

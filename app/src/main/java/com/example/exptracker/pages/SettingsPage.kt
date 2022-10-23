@@ -13,12 +13,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.exptracker.data.Currencies
+import com.example.exptracker.datastore.UserPreference
 import com.example.exptracker.navigation.Screen
 import com.example.exptracker.ui.theme.CardColor
 import com.example.exptracker.ui.theme.ExpTrackerTheme
@@ -47,10 +50,10 @@ fun RowButton(title: String, value: String, onClick: () -> Unit) {
 @Composable
 fun SettingsPage(
     navController: NavController = rememberNavController(),
-    userDetailViewModel: UserDetailViewModel = UserDetailViewModel()
+    userDetailViewModel: UserDetailViewModel
 ) {
-    val budget = userDetailViewModel.budget.collectAsState()
-    val currency = userDetailViewModel.currency.collectAsState()
+    val budget = userDetailViewModel.budget.collectAsState(initial = 0f)
+    val currency = userDetailViewModel.currency.collectAsState(initial = Currencies[0])
     Column(
         Modifier
             .fillMaxWidth()
@@ -81,7 +84,7 @@ fun SettingsPage(
             navController.navigate(Screen.SetUpScreen.route)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        RowButton(title = "Currency", value = (currency.value.name)) {
+        RowButton(title = "Currency", value = (currency.value?.name ?: Currencies[0].name)) {
             navController.navigate(Screen.SetUpScreen.route)
         }
     }
@@ -91,6 +94,6 @@ fun SettingsPage(
 @Composable
 fun SettingsPagePreview(){
     ExpTrackerTheme {
-        SettingsPage()
+        SettingsPage(userDetailViewModel = UserDetailViewModel(UserPreference(LocalContext.current)))
     }
 }
